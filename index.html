@@ -3,149 +3,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PokeElastico — Pokemon</title>
+  <title>Pokemon Roguelike</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<!-- ===== TITLE SCREEN ===== -->
+<div id="team-hover-card"></div>
+
+<!-- TITLE -->
 <div id="title-screen" class="screen active">
-  <div class="game-logo">PokeElastico</div>
-  <div class="game-subtitle">Pokemon PokeElastico</div>
-  <div class="version">v1.0.0</div>
-  <button id="btn-continue" class="btn-primary" style="display:none">▶ Continue Run</button>
-  <button id="btn-new-run" class="btn-primary">▶ New Game</button>
-  <button id="btn-nuzlocke" class="btn-primary btn-danger">☠ Nuzlocke Mode</button>
-  <div class="title-row">
+  <div class="game-logo">POKELIKE</div>
+  <div class="game-subtitle">Pokemon Roguelike</div>
+  <div style="color:var(--text-dim);font-size:9px;margin-bottom:6px;">v1.0.0</div>
+  <button id="btn-continue-run" class="btn-primary" style="display:none;margin-bottom:10px;">Continue Run</button>
+  <button id="btn-new-run" class="btn-primary">Normal Mode</button>
+  <button id="btn-hard-run" class="btn-primary" style="margin-top:6px;">Nuzlocke</button>
+  <div style="display:flex;gap:8px;margin-top:8px;">
     <button onclick="openPokedex()" class="btn-secondary">📖 Pokédex</button>
     <button onclick="openHallOfFame()" class="btn-secondary">🏆 Hall of Fame</button>
   </div>
 </div>
 
-<!-- ===== TRAINER SELECT ===== -->
+<!-- TRAINER SELECT -->
 <div id="trainer-screen" class="screen">
   <h2>Who are you?</h2>
   <div id="trainer-choices">
-    <div class="trainer-card" id="trainer-boy" onclick="selectTrainer('boy')">
-      <div class="trainer-sprite boy"></div>
-      <div class="trainer-label red">BOY</div>
+    <div class="trainer-card" id="trainer-boy" role="button" tabindex="0" onclick="selectTrainer('boy')">
+      <div class="trainer-icon-wrap">
+        <img src="https://play.pokemonshowdown.com/sprites/trainers/red.png" alt="Boy">
+      </div>
+      <div class="trainer-label" style="color:#cc1111">BOY</div>
     </div>
-    <div class="trainer-card" id="trainer-girl" onclick="selectTrainer('girl')">
-      <div class="trainer-sprite girl"></div>
-      <div class="trainer-label green">GIRL</div>
+    <div class="trainer-card" id="trainer-girl" role="button" tabindex="0" onclick="selectTrainer('girl')">
+      <div class="trainer-icon-wrap">
+        <img src="https://play.pokemonshowdown.com/sprites/trainers/leaf.png" alt="Girl">
+      </div>
+      <div class="trainer-label" style="color:#33aa33">GIRL</div>
     </div>
   </div>
 </div>
 
-<!-- ===== STARTER SELECT ===== -->
+<!-- STARTER SELECT -->
 <div id="starter-screen" class="screen">
-  <h2>Choose your Starter!</h2>
+  <h2>Choose Your Starter!</h2>
   <div id="starter-choices"></div>
 </div>
 
-<!-- ===== MAP SCREEN ===== -->
+<div id="map-node-tooltip"></div>
+<div id="item-tooltip"></div>
+
+<!-- MAP -->
 <div id="map-screen" class="screen">
   <div class="map-header">
     <div id="map-info"></div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <div id="badge-display"></div>
-      <button onclick="openPokedex()" class="btn-icon">📖</button>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div id="badge-count"></div>
+      <button onclick="openPokedex()" class="btn-icon-sm" title="Pokédex">📖</button>
     </div>
   </div>
+  <div class="map-actions">
+    <button onclick="openPokedex()" class="btn-secondary" style="font-size:16px;padding:6px 10px;">📖</button>
+    <button onclick="openHallOfFame()" class="btn-secondary" style="font-size:16px;padding:6px 10px;">🏆</button>
+  </div>
   <div class="map-panels">
-    <div class="hud-box">
+    <div class="hud-box map-panel-left">
       <div class="hud-label">TEAM</div>
       <div id="team-bar"></div>
     </div>
-    <div class="hud-box">
+    <div class="hud-box map-panel-right">
       <div class="hud-label">ITEMS</div>
       <div id="item-bar"></div>
-      <div class="hud-label" style="margin-top:8px;">BADGES</div>
-      <div id="badge-panel"></div>
+      <div class="hud-label map-badges-label">BADGES</div>
+      <div id="badge-count-panel"></div>
     </div>
   </div>
   <div id="map-container"></div>
 </div>
 
-<!-- ===== BATTLE SCREEN ===== -->
+<!-- BATTLE -->
 <div id="battle-screen" class="screen">
   <div class="battle-header">
     <h2 id="battle-title">Wild Battle!</h2>
     <p id="battle-subtitle"></p>
   </div>
   <div class="battle-controls">
-    <button id="btn-skip-battle" class="btn-primary">⏩ Skip</button>
-    <button id="btn-continue-battle" class="btn-primary" style="display:none">Continue →</button>
+    <button id="btn-auto-battle" class="btn-primary">Skip</button>
+    <button id="btn-continue-battle" class="btn-primary" style="display:none">Continue</button>
   </div>
   <div class="battle-field">
     <div class="battle-side">
+      <div class="battle-trainer" id="player-trainer-icon"></div>
       <div class="battle-side-label">Your Team</div>
       <div id="player-side"></div>
     </div>
-    <div class="vs-label">VS</div>
     <div class="battle-side">
+      <div class="battle-trainer" id="enemy-trainer-icon"></div>
       <div class="battle-side-label">Enemy</div>
       <div id="enemy-side"></div>
     </div>
   </div>
-  <div id="battle-log"></div>
 </div>
 
-<!-- ===== CATCH SCREEN ===== -->
+<!-- CATCH -->
 <div id="catch-screen" class="screen">
-  <h2>⬟ Wild Pokemon!</h2>
-  <p class="screen-sub">Choose one to add to your team</p>
+  <h2>⬟ Wild Pokemon Appeared!</h2>
+  <p style="text-align:center;color:var(--text-dim);font-size:12px;">Choose one Pokemon to add to your team</p>
   <div id="catch-choices"></div>
-  <button id="btn-skip-catch" class="btn-secondary" style="margin-top:12px;">Skip (flee)</button>
+  <div style="text-align:center;margin-top:12px;">
+    <button id="btn-skip-catch" class="btn-secondary">Skip (flee)</button>
+  </div>
   <div id="catch-team-bar" class="screen-team-bar"></div>
 </div>
 
-<!-- ===== ITEM SCREEN ===== -->
+<!-- ITEM -->
 <div id="item-screen" class="screen">
   <h2>✦ Item Found!</h2>
-  <p class="screen-sub">Choose one item to keep</p>
+  <p style="text-align:center;color:var(--text-dim);font-size:12px;">Choose one item to keep</p>
   <div id="item-choices"></div>
-  <button id="btn-skip-item" class="btn-secondary" style="margin-top:12px;">Skip</button>
+  <div style="text-align:center;margin-top:12px;">
+    <button id="btn-skip-item" class="btn-secondary">Skip</button>
+  </div>
   <div id="item-team-bar" class="screen-team-bar"></div>
 </div>
 
-<!-- ===== SWAP SCREEN ===== -->
+<!-- SWAP -->
 <div id="swap-screen" class="screen">
   <h2>Team Full!</h2>
   <div id="swap-incoming"></div>
-  <p id="swap-prompt" style="font-size:10px;color:var(--text-dim);text-align:center;"></p>
+  <p id="swap-prompt" class="swap-prompt"></p>
   <div id="swap-choices"></div>
-  <button id="btn-cancel-swap" class="btn-secondary" style="margin-top:12px;">Keep team</button>
+  <div style="text-align:center;margin-top:12px;">
+    <button id="btn-cancel-swap" class="btn-secondary">Keep team as-is</button>
+  </div>
 </div>
 
-<!-- ===== BADGE SCREEN ===== -->
+<!-- BADGE -->
 <div id="badge-screen" class="screen">
-  <div class="badge-icon">🏅</div>
-  <div id="badge-msg" class="badge-msg">Badge Earned!</div>
+  <img id="badge-icon-img" class="badge-icon" src="" alt="Badge" onerror="this.style.display='none'">
+  <div id="badge-msg">Badge Earned!</div>
   <div id="badge-leader"></div>
-  <div id="badge-count-display"></div>
+  <div id="badge-count-display">Badges: 0/8</div>
   <button id="btn-next-map" class="btn-primary">Next Map →</button>
 </div>
 
-<!-- ===== GAME OVER ===== -->
+<!-- TRANSITION -->
+<div id="transition-screen" class="screen">
+  <div id="transition-msg"></div>
+  <div id="transition-sub"></div>
+</div>
+
+<!-- GAME OVER -->
 <div id="gameover-screen" class="screen">
   <div class="gameover-title">GAME OVER</div>
+  <div id="gameover-badges"></div>
   <div id="gameover-info"></div>
   <button id="btn-retry" class="btn-primary">Try Again</button>
 </div>
 
-<!-- ===== WIN SCREEN ===== -->
+<!-- WIN -->
 <div id="win-screen" class="screen">
-  <div class="win-title">CHAMPION!</div>
+  <div class="win-title">YOU ARE THE<br>CHAMPION!</div>
   <p style="color:var(--text-dim);text-align:center;">You defeated the Elite Four!</p>
   <div id="win-team"></div>
-  <button id="btn-play-again" class="btn-primary">Play Again</button>
-  <button onclick="openHallOfFame()" class="btn-secondary">🏆 Hall of Fame</button>
+  <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
+    <button id="btn-play-again" class="btn-primary">Play Again</button>
+    <button onclick="openHallOfFame()" class="btn-secondary">🏆 Hall of Fame</button>
+  </div>
 </div>
 
-<!-- ===== MODALS ===== -->
+<!-- EVOLUTION OVERLAY -->
+<div id="evo-overlay" style="display:none;position:fixed;inset:0;z-index:200;background:#000;
+     align-items:center;justify-content:center;flex-direction:column;gap:20px;">
+  <div id="evo-msg" style="font-family:'Press Start 2P',monospace;font-size:11px;color:#fff;
+       text-align:center;line-height:1.8;max-width:280px;padding:0 16px;"></div>
+  <img id="evo-sprite" style="width:96px;height:96px;image-rendering:pixelated;">
+</div>
+
+<!-- MODAL -->
 <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
   <div class="modal" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="closeModal()">✕</button>
@@ -153,13 +190,6 @@
   </div>
 </div>
 
-<!-- ===== EVOLUTION OVERLAY ===== -->
-<div id="evo-overlay">
-  <div id="evo-msg"></div>
-  <img id="evo-sprite">
-</div>
-
-<!-- Scripts -->
 <script src="js/data.js"></script>
 <script src="js/map.js"></script>
 <script src="js/battle.js"></script>
