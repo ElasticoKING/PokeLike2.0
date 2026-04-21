@@ -284,7 +284,7 @@ async function bossBattleWon() {
   document.getElementById('badge-count-display').textContent = `Badges: ${RUN.badges}/8`;
   showScreen('badge-screen');
 
-  advanceMap(RUN.map, RUN.currentNodeId);
+  advanceFromNode(RUN.map, RUN.currentNodeId);
   saveRun();
 
   document.getElementById('btn-next-map').onclick = async () => {
@@ -431,7 +431,7 @@ async function doQuestion(node) {
 
 // ---- ADVANCE MAP & RETURN ----
 function advanceAndReturn(nodeId) {
-  advanceMap(RUN.map, nodeId);
+  advanceFromNode(RUN.map, nodeId);
   saveRun();
   showMap();
 }
